@@ -17,7 +17,7 @@ class ReactiveKafkaConsumer(
     private val kafkaConfiguration: KafkaConfiguration,
     private val applicationProperties: ApplicationProperties,
     private val monitoringService: MonitoringService,
-    private val mapper: SensorDataParser = SensorDataParser.INSTANCE
+    private val parser: SensorDataParser = SensorDataParser.INSTANCE
 ) {
     @Volatile
     private var kafkaConnection: Pair<Disposable, CountDownLatch>? = null
@@ -77,7 +77,7 @@ class ReactiveKafkaConsumer(
 
     private fun processRecord(record: ReceiverRecord<String, String>) {
         runCatching {
-            mapper.toDto(record.value())
+            parser.toDto(record.value())
         }.onFailure {
             logger.warn(it.message, it)
         }.onSuccess {

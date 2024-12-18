@@ -15,21 +15,20 @@ import java.io.InputStream
 import java.util.*
 
 class PropertiesConfiguration private constructor() {
-    private var properties: Properties
-    private var applicationProperties: ApplicationProperties
+    private val properties: Properties
+    private val applicationProperties: ApplicationProperties
 
     init {
         properties = loadProperties()
         applicationProperties = loadApplicationProperties()
     }
+
     fun getApplicationProperties(): ApplicationProperties = applicationProperties
 
     fun configureLoggingLevel() {
-        val path: String = Thread.currentThread().contextClassLoader
-            ?.getResource("logback.xml")?.file?.toString()
-            ?: throw InternalException(InternalError.PROPERTY_LOAD_ERROR)
-
-        System.setProperty(ClassicConstants.AUTOCONFIG_FILE, path)
+        Thread.currentThread().contextClassLoader
+            ?.getResource(LOGBACK_FILE)?.file?.toString()
+            ?.let { System.setProperty(ClassicConstants.AUTOCONFIG_FILE, it) }
     }
 
     private fun loadApplicationProperties(): ApplicationProperties {
@@ -45,7 +44,7 @@ class PropertiesConfiguration private constructor() {
     private fun loadProperties(): Properties {
         try {
             val stream: InputStream = PropertiesConfiguration::class.java
-                .getResourceAsStream("/application.properties")
+                .getResourceAsStream(PROPERTIES_FILE)
                 ?: throw InternalException(InternalError.PROPERTY_LOAD_ERROR)
 
             val properties = Properties()
@@ -57,7 +56,10 @@ class PropertiesConfiguration private constructor() {
 
             return properties
         } catch (e: Exception) {
-            logger.error("Happened an error while loading properties from the application.properties, message = ${e.message}", e)
+            logger.error(
+                "Happened an error while loading properties from the application.properties, message = ${e.message}",
+                e
+            )
             throw e
         }
     }
@@ -73,5 +75,7 @@ class PropertiesConfiguration private constructor() {
         private val regex = "\\$\\{([^:}]+):([^}]+)}".toRegex()
         private val logger: Logger = getLogger<PropertiesConfiguration>()
         val INSTANCE: PropertiesConfiguration by lazy(LazyThreadSafetyMode.SYNCHRONIZED) { PropertiesConfiguration() }
+        private const val LOGBACK_FILE = "logback.xml"
+        private const val PROPERTIES_FILE = "/application.properties"
     }
 }

@@ -43,9 +43,9 @@ class KafkaConfiguration private constructor (
     }
 
     companion object {
-        private val properties: ApplicationProperties = PropertiesConfiguration.INSTANCE.getApplicationProperties()
-        val INSTANCE: KafkaConfiguration by lazy(LazyThreadSafetyMode.SYNCHRONIZED) { KafkaConfiguration(properties) }
-
         private val logger: Logger = getLogger<KafkaConfiguration>()
+        private val properties: ApplicationProperties = PropertiesConfiguration.INSTANCE.getApplicationProperties()
+
+        val INSTANCE: KafkaConfiguration by lazy(LazyThreadSafetyMode.SYNCHRONIZED) { KafkaConfiguration(properties) }
     }
 }

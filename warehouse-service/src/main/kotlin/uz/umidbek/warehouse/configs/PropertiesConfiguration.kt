@@ -19,8 +19,8 @@ import java.util.Properties
 
 class PropertiesConfiguration private constructor() {
 
-    private var properties: Properties
-    private var applicationProperties: ApplicationProperties
+    private val properties: Properties
+    private val applicationProperties: ApplicationProperties
 
     init {
         properties = loadProperties()
@@ -30,7 +30,7 @@ class PropertiesConfiguration private constructor() {
 
     fun configureLoggingLevel() {
         val path: String = Thread.currentThread().contextClassLoader
-            ?.getResource("logback.xml")?.path
+            ?.getResource(LOGBACK_FILE)?.path
             ?: throw InternalException(InternalError.PROPERTY_LOAD_ERROR)
 
         System.setProperty(ClassicConstants.AUTOCONFIG_FILE, path)
@@ -66,7 +66,7 @@ class PropertiesConfiguration private constructor() {
 
     private fun loadProperties(): Properties {
         try {
-            val stream: InputStream = PropertiesConfiguration::class.java.getResourceAsStream("/application.properties")
+            val stream: InputStream = PropertiesConfiguration::class.java.getResourceAsStream(PROPERTIES_FILE)
                 ?: throw InternalException(InternalError.PROPERTY_LOAD_ERROR)
 
             val properties = Properties()
@@ -90,10 +90,11 @@ class PropertiesConfiguration private constructor() {
     }
 
     companion object {
+        private const val LOGBACK_FILE = "logback.xml"
+        private const val PROPERTIES_FILE = "/application.properties"
         private val regex = "\\$\\{([^:}]+):([^}]+)}".toRegex()
         private val logger: Logger = getLogger<PropertiesConfiguration>()
         val INSTANCE: PropertiesConfiguration by lazy(LazyThreadSafetyMode.SYNCHRONIZED) { PropertiesConfiguration() }
-
     }
 
 }

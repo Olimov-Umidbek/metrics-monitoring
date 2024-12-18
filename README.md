@@ -23,32 +23,28 @@ graph TD;
 ```
 
 ## Steps to run:
-1. Build
++ Build
 ```shell 
 mvn clean package
 ```
-
-2. Build warehouse-service docker images 
++ Build warehouse-service docker images 
 ```shell 
 cd warehouse-service 
 docker build -t 'warehouse-service' . 
 ```
-
-3. Build central-service docker images
++ Build central-service docker images
 ```shell 
 cd ..
 cd central-service 
 docker build -t 'central-service' .
 ```
-
-4. Run docker compose
++ Run docker compose
 ```shell
 cd ..
 docker compose run
 ```
-
-## Testing:
-1. Run shell 
++ Run shell to send udp datagram:
 ```shell
 seq 100 | xargs -I{} echo "sensor_id=t{}; value={}" | nc -u -w1 localhost 3344
+seq 100 | xargs -I{} echo "sensor_id=t{}; value={}" | nc -u -w1 localhost 3355
 ```
