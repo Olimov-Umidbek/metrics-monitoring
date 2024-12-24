@@ -41,7 +41,7 @@ docker build -t 'central-service' .
 + Run docker compose
 ```shell
 cd ..
-docker compose run
+docker compose up
 ```
 + Run shell to send udp datagram:
 ```shell
