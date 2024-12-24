@@ -4,6 +4,7 @@ import uz.umidbek.warehouse.configs.PropertiesConfiguration
 import uz.umidbek.warehouse.configs.props.ApplicationProperties
 import uz.umidbek.commons.enums.SensorType
 import uz.umidbek.warehouse.service.publisher.SensorPublisherFactory
+import uz.umidbek.warehouse.service.server.SensorServer
 import uz.umidbek.warehouse.service.server.SensorServerFactory
 
 fun main() {

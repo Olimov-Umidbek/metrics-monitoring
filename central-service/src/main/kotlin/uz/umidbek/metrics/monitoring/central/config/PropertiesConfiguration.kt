@@ -1,10 +1,14 @@
 package uz.umidbek.metrics.monitoring.central.config
 
 import ch.qos.logback.classic.ClassicConstants
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.module.kotlin.KotlinModule
+import com.fasterxml.jackson.module.kotlin.readValue
 import org.slf4j.Logger
 import uz.umidbek.commons.exceptions.InternalException
 import uz.umidbek.commons.model.InternalError
 import uz.umidbek.metrics.monitoring.central.config.props.ApplicationProperties
+import uz.umidbek.metrics.monitoring.central.config.props.ApplicationProperties.SensorGroup
 import uz.umidbek.metrics.monitoring.central.utils.Constants.BOOTSTRAP_ADDRESS
 import uz.umidbek.metrics.monitoring.central.utils.Constants.CONSUMER_GROUP
 import uz.umidbek.metrics.monitoring.central.utils.Constants.HUMIDITY_THRESHOLD
@@ -17,6 +21,8 @@ import java.util.*
 class PropertiesConfiguration private constructor() {
     private val properties: Properties
     private val applicationProperties: ApplicationProperties
+    private val objectMapper: ObjectMapper = ObjectMapper()
+        .registerModule(KotlinModule.Builder().build())
 
     init {
         properties = loadProperties()
@@ -36,8 +42,12 @@ class PropertiesConfiguration private constructor() {
             topic = properties.getProperty(TOPIC),
             consumerGroupId = properties.getProperty(CONSUMER_GROUP),
             bootstrapServers = properties.getProperty(BOOTSTRAP_ADDRESS),
-            temperatureThreshold = properties.getProperty(TEMPERATURE_THRESHOLD).toInt(),
-            humidityThreshold = properties.getProperty(HUMIDITY_THRESHOLD).toInt(),
+            temperatureGroup = loadGroup(
+                properties.getProperty(TEMPERATURE_THRESHOLD)
+            ),
+            humidityGroup = loadGroup(
+                properties.getProperty(HUMIDITY_THRESHOLD)
+            ),
         )
     }
 
@@ -62,6 +72,11 @@ class PropertiesConfiguration private constructor() {
             )
             throw e
         }
+    }
+
+    private fun loadGroup(conf: String): List<SensorGroup> {
+        val data: List<SensorGroup> = objectMapper.readValue(conf)
+        return data
     }
 
     private fun resolveEnvVars(value: String): String {
